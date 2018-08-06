@@ -1,0 +1,41 @@
+Fonts:
+Open Sans:
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+'Open Sans'
+
+Collections:
+groups/companies:
+  name:
+  subdomain:
+  admin:
+  users:
+  projects:
+  teams:
+projects:
+  name:
+  users:
+  notes:
+  files:
+teams:
+  name:
+  users:
+users:
+  email:
+  group:
+  password:
+  projects:
+  teams:
+  messages:
+
+Views:
+  landingpage:
+  mainpage:
+  
+Features:
+  drag and sort
+  edit
+  chat
+  share files
+  add sketch
+  add graph/chart
+  
