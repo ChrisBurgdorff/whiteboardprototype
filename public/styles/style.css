@@ -91,6 +91,33 @@ WebKit inertia scrolling is being added here for any present/future devices that
 .right {
   width: 17.5rem;
 }
+.top, .left, .middle, .right {
+  background-color: #fcfcfc;
+  color: #262626;
+  border: 1px solid #b3b3b3;
+}
+/*******************************************OPTION 2:
+#content, html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#left {
+    float: left;
+    width: 50%;
+    background: red;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+#right {
+    float: left;
+    width: 50%;
+    background: blue;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
 /*-------------------------------------------------------*/
 /*------------End of multi column scroll test------------*/
 /*-------------------------------------------------------*/
