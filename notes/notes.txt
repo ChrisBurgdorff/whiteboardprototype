@@ -43,3 +43,9 @@ Features:
   add sketch
   add graph/chart
   
+
+McAfeeSecure Seal:
+<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
+
+Update to NPM:
+"npm i npm"
