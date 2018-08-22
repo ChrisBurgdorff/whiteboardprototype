@@ -2,8 +2,12 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var jwt = require('jsonwebtoken');
+var MongoClient = require('mongodb').MongoClient;
+//Custom modules
+var config = require('./config');
 //Instantiate Modules
 var app = express();
+var MongoUrl = config.MONGODB_CONNECT_URL;
 //Variables
 var port = process.env.PORT || 3000;
 //Routes
@@ -38,7 +42,16 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
     }
   });
 });
-//Start Server
-app.listen(port, function() {
-  console.log("App is listening on port 3000.")
+
+app.get('/login', function (req, res){
+  res.sendFile(__dirname + '/public/' +'login.html');
+});
+//Start Server and connect to Mongo
+var db;
+MongoClient.connect(MongoUrl, (err, client) => {
+  if (err) return console.log(err);
+  db = client.db('whiteboarddb');
+  app.listen(port, function() {
+    console.log("App is listening on port 3000.")
+  });
 });
