@@ -12,17 +12,17 @@
 		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<div ng-controller="LoginCtrl">
       <h2>Sign In</h2>
-      <p>email:</p><input type="text">
-      <p>Password:</p><input type="password">
-      <button>Sign In</button>
+      <p>email:</p><input type="text" ng-model="email">
+      <p>Password:</p><input type="password" ng-model="password">
+      <button ng-model="signIn">Sign In</button>
       <h2>Register</h2>
-      <p>First Name:</p><input type="text">
-      <p>Last Name:</p><input type="text">
-      <p>email:</p><input type="text">
-      <p>Password:</p><input type="password">
-      <button>Sign Up</button>
+      <p>First Name:</p><input type="text" ng-model="firstName">
+      <p>Last Name:</p><input type="text" ng-model="lastName">
+      <p>email:</p><input type="text" ng-model="email">
+      <p>Password:</p><input type="password" ng-model="password">
+      <button ng-click="signUp">Sign Up</button>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
-		<!--<script src="controllers/logincontroller.js"></script>-->
+	  <script src="controllers/logincontroller.js"></script>
 	</body>
 </html>
