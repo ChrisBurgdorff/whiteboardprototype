@@ -39,12 +39,16 @@ app.post('/api/post', function (req, res){ //demo protected route
 });
 //Add a new user
 app.post('/api/register', function(req, res, next){
+  console.log("request coming next");
+  console.log(req);
+  console.log(req.body);
   var schema = {
     firstName: joi.string().alphanum().min(1).max(50).required(),
     lastName: joi.string().alphanum.min(1).max(50).required(),
     email: joi.string().email().min(5).max(50).required(),
     password: joi.string().regex(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,50}$/).required()
   };
+  res.json({message: "SDFSDF"});
   joi.validate(req.body, schema, function(err, value){
     if (err) {
       return next(new Error('Please enter a valid email and a password between 6 and 50 characters'));
