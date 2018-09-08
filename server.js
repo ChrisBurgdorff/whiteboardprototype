@@ -3,7 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var jwt = require('jsonwebtoken');
 var MongoClient = require('mongodb').MongoClient;
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var joi = require('joi');
 //Custom modules
 var config = require('./config');
@@ -21,12 +21,16 @@ MongoClient.connect(MongoUrl, (err, client) => {
     console.log("App is listening on port 3000.")
   });
 });
-//Routes
-/*
-app.get('/', function (req, res){
-  res.send("HELLO THERE!");
-});  */
+//Middleware:
+app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public")); 
+//Error Handling:
+function errorHandler (err, req, res, next) {
+  console.log("HERE THE FUCKING ERROR:");
+  console.log(err);
+  res.status(200).json({err});
+}
+//Routes:
 app.get('/api', function (req, res){ //Demo route unprotected
   res.json({
     message: "API GET"
@@ -39,19 +43,21 @@ app.post('/api/post', function (req, res){ //demo protected route
 });
 //Add a new user
 app.post('/api/register', function(req, res, next){
-  console.log("request coming next");
-  console.log(req);
-  console.log(req.body);
+  //console.log("request coming next");
+  //console.log(req);
+  //console.log(req.body);
+  //console.log("res coming next");
+  //console.log(res);
   var schema = {
     firstName: joi.string().alphanum().min(1).max(50).required(),
-    lastName: joi.string().alphanum.min(1).max(50).required(),
-    email: joi.string().email().min(5).max(50).required(),
-    password: joi.string().regex(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,50}$/).required()
+    lastName: joi.string().alphanum().min(1).max(50).required(),
+    email: joi.string().email().min(5).max(100).required(),
+    password: joi.string().min(6).max(100).required()
   };
-  res.json({message: "SDFSDF"});
+  //res.json({message: "SDFSDF"});
   joi.validate(req.body, schema, function(err, value){
     if (err) {
-      return next(new Error('Please enter a valid email and a password between 6 and 50 characters'));
+      return next(new Error('Please enter a valid email and a password between 6 and 100 characters'));
     }
     db.collection('users').findOne({email: req.body.email}, function(err, result) {
       if (err) {
@@ -70,6 +76,8 @@ app.post('/api/register', function(req, res, next){
           newUser.password = hash;
           db.collection('users').insertOne(newUser, function(err, result){
             if (err) {return next(err);}
+            //console.log("Password hashed: ");
+            //console.log(newUser.password);
             res.status(201).json(result.ops[0]);
           });
         });
@@ -97,4 +105,6 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
 app.get('/login', function (req, res){
   res.sendFile(__dirname + '/public/' +'login.html');
 });
+
+app.use(errorHandler);
 

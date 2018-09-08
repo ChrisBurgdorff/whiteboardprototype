@@ -9,16 +9,24 @@ myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
     var newUser = {
       firstName: $scope.firstName,
       lastName: $scope.lastName,
-      email: $scope.email,
-      password: $scope.password
+      email: $scope.newEmail,
+      password: $scope.newPassword
     };
     $http({
       method: 'POST',
       url: '/api/register', 
       data: newUser})
       .then(function(response){
-        console.log(response);
-        alert("new user created");
+        if (response.status == 200) {
+          console.log(response);
+          alert("200 Error");
+        } else if (response.status == 201) {
+          alert("New user created");
+        }
+        else {
+          alert("Something went wrong");
+          console.log(response);
+        }
     });
   };
 }]);
