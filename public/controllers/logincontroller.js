@@ -20,12 +20,19 @@ myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
         if (response.status == 200) {
           console.log(response);
           alert("200 Error");
+          console.log(response);
+          console.log(response.data);
+          console.log(response.data.message);
+          $scope.errorMessage = response.data.message;
         } else if (response.status == 201) {
           alert("New user created");
         }
         else {
           alert("Something went wrong");
           console.log(response);
+          console.log(response.data);
+          console.log(response.data.message);
+          $scope.errorMessage = response.data.message;
         }
     });
   };

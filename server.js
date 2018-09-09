@@ -9,9 +9,9 @@ var joi = require('joi');
 var config = require('./config');
 //Instantiate Modules
 var app = express();
-var MongoUrl = config.MONGODB_CONNECT_URL;
 //Variables
 var port = process.env.PORT || 3000;
+var MongoUrl = config.MONGODB_CONNECT_URL;
 //Start Server and connect to Mongo
 var db;
 MongoClient.connect(MongoUrl, (err, client) => {
@@ -26,9 +26,7 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public")); 
 //Error Handling:
 function errorHandler (err, req, res, next) {
-  console.log("HERE THE FUCKING ERROR:");
-  console.log(err);
-  res.status(200).json({err});
+  res.status(200).json({message: err.message});
 }
 //Routes:
 app.get('/api', function (req, res){ //Demo route unprotected
@@ -43,18 +41,12 @@ app.post('/api/post', function (req, res){ //demo protected route
 });
 //Add a new user
 app.post('/api/register', function(req, res, next){
-  //console.log("request coming next");
-  //console.log(req);
-  //console.log(req.body);
-  //console.log("res coming next");
-  //console.log(res);
   var schema = {
     firstName: joi.string().alphanum().min(1).max(50).required(),
     lastName: joi.string().alphanum().min(1).max(50).required(),
     email: joi.string().email().min(5).max(100).required(),
     password: joi.string().min(6).max(100).required()
   };
-  //res.json({message: "SDFSDF"});
   joi.validate(req.body, schema, function(err, value){
     if (err) {
       return next(new Error('Please enter a valid email and a password between 6 and 100 characters'));
@@ -76,8 +68,6 @@ app.post('/api/register', function(req, res, next){
           newUser.password = hash;
           db.collection('users').insertOne(newUser, function(err, result){
             if (err) {return next(err);}
-            //console.log("Password hashed: ");
-            //console.log(newUser.password);
             res.status(201).json(result.ops[0]);
           });
         });
