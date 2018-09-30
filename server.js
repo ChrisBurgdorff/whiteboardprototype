@@ -26,6 +26,7 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public")); 
 //Error Handling:
 function errorHandler (err, req, res, next) {
+  console.log(err.message);
   res.status(200).json({message: err.message});
 }
 //Routes:
@@ -53,7 +54,7 @@ app.post('/api/register', function(req, res, next){
     }
     db.collection('users').findOne({email: req.body.email}, function(err, result) {
       if (err) {
-        return next(err);
+        return next(new Error('Trouble connecting to the database.'));
       } else if (result) {
         return next(new Error("Email already registered.  Please sign in."));
       } else {
@@ -76,12 +77,33 @@ app.post('/api/register', function(req, res, next){
   });
 });
 app.post('/api/login', function (req, res){ //demo login, use jwt stuff
-  var user = { //replace, get user from DB
+  db.collection('users').findOne({email: req.body.email}, function(err, result) {
+    if (err) {
+      return next(new Error ('Trouble connecting to the database.'));
+    } else if (!result) {
+      return next(new Error('User not registered.'));
+    } else if (result) {
+      bcrypt.compare(req.body.password, result.password, function(err, res) {
+        if (err) {
+          return next(err);
+        } else {
+          if (res) {
+            //USER SIGNED IN
+            console.log("SIGNED IN");
+          } else {
+            //INCORRECT EMAIL OR PASSWORD
+            return next(new Error('Incorrect password.'));
+            console.log("WRONG PASSWORD FOOL");
+          }
+        }
+      });
+    }
+  /*var user = { //replace, get user from DB
     id: 1,
-    userName: "Chris",
+    email: "Chris",
     email: "wesborland"
-  };
-  jwt.sign({user: user}, config.JWT_SECRET, function (err, token){ //replace secret key with some generated key
+  };*/
+  /*jwt.sign({user: user}, config.JWT_SECRET, function (err, token){ //replace secret key with some generated key
     if (err) {
       res.sendStatus(403);
     } else {
@@ -89,6 +111,7 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
         token
       });
     }
+  });  */
   });
 });
 

@@ -2,7 +2,27 @@ var myApp = angular.module('WhiteboardApp', []);
 
 myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
   $scope.signIn = function(){
-    
+    var existingUser = {
+      email: $scope.email,
+      password: $scope.password
+    };
+    $http({
+      method: 'POST',
+      url: '/api/login',
+      data: existingUser})
+      .then(function(response){
+        if (response.status == 200) {
+          //Error status
+          console.log(response.data.message);
+          $scope.errorMessage = response.data.message;
+        } else if (response.status == 201) {
+          //Good response
+        } else {
+          //Some other Error
+          console.log(response.data.message);
+          $scope.errorMessage = response.data.message;
+        }
+      })
   };
   $scope.signUp = function(){
     console.log("in signup function");
@@ -18,19 +38,13 @@ myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
       data: newUser})
       .then(function(response){
         if (response.status == 200) {
-          console.log(response);
-          alert("200 Error");
-          console.log(response);
-          console.log(response.data);
           console.log(response.data.message);
           $scope.errorMessage = response.data.message;
         } else if (response.status == 201) {
-          alert("New user created");
+          //NEW USER CREATED
+          //Do something
         }
         else {
-          alert("Something went wrong");
-          console.log(response);
-          console.log(response.data);
           console.log(response.data.message);
           $scope.errorMessage = response.data.message;
         }
