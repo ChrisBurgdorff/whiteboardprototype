@@ -12,6 +12,7 @@ var app = express();
 //Variables
 var port = process.env.PORT || 3000;
 var MongoUrl = config.MONGODB_CONNECT_URL;
+var jwtSecret = config.JWT_SECRET;
 //Start Server and connect to Mongo
 var db;
 MongoClient.connect(MongoUrl, (err, client) => {
@@ -24,6 +25,19 @@ MongoClient.connect(MongoUrl, (err, client) => {
 //Middleware:
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public")); 
+//Verify JWT:
+function verifyToken(req, res, next) {
+  var token = req.headers['x-access-token'];
+  if (!token)
+    return res.status(403).send({ auth: false, message: 'No token provided.' });
+  jwt.verify(token, config.secret, function(err, decoded) {
+    if (err)
+    return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    // if everything good, save to request for use in other routes
+    req.userId = decoded.id;
+    next();
+  });
+}
 //Error Handling:
 function errorHandler (err, req, res, next) {
   console.log(err.message);
@@ -69,7 +83,13 @@ app.post('/api/register', function(req, res, next){
           newUser.password = hash;
           db.collection('users').insertOne(newUser, function(err, result){
             if (err) {return next(err);}
-            res.status(201).json(result.ops[0]);
+            // create a token
+            //console.log(result);
+            var token = jwt.sign({ id: result.ops[0]._id }, jwtSecret, {
+              expiresIn: 86400 // expires in 24 hours
+            });
+            res.status(201).send({ auth: true, token: token });
+            //res.status(201).json(result.ops[0]);
           });
         });
       }
@@ -83,11 +103,17 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
     } else if (!result) {
       return next(new Error('User not registered.'));
     } else if (result) {
-      bcrypt.compare(req.body.password, result.password, function(err, res) {
+      bcrypt.compare(req.body.password, result.password, function(err, resb) {
         if (err) {
           return next(err);
         } else {
-          if (res) {
+          if (resb) {
+            console.log("RESULT COMING MOTHERFUCKER");
+            console.log(result);
+            var token = jwt.sign({ id: result._id }, jwtSecret, {
+              expiresIn: 86400 // expires in 24 hours
+            });
+            res.status(201).send({ auth: true, token: token });
             //USER SIGNED IN
             console.log("SIGNED IN");
           } else {
@@ -115,8 +141,21 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
   });
 });
 
+app.get('/me', verifyToken, function(req, res, next) {  //Set up to test if token is provided
+  User.findById(req.userId, { password: 0 }, function (err, user) {
+    if (err) return res.status(500).send("There was a problem finding the user.");
+    if (!user) return res.status(404).send("No user found.");
+    
+    res.status(200).send(user);
+  });
+});
+
 app.get('/login', function (req, res){
   res.sendFile(__dirname + '/public/' +'login.html');
+});
+
+app.get('/logout', function(req, res) {
+  res.status(200).send({ auth: false, token: null });
 });
 
 app.use(errorHandler);
