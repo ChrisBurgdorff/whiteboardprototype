@@ -13,6 +13,8 @@ var app = express();
 var port = process.env.PORT || 3000;
 var MongoUrl = config.MONGODB_CONNECT_URL;
 var jwtSecret = config.JWT_SECRET;
+//Helper Function
+
 //Start Server and connect to Mongo
 var db;
 MongoClient.connect(MongoUrl, (err, client) => {
@@ -24,13 +26,17 @@ MongoClient.connect(MongoUrl, (err, client) => {
 });
 //Middleware:
 app.use(bodyParser.json());
-app.use(express.static(__dirname + "/public")); 
+app.use(express.static(__dirname + "/public"));
 //Verify JWT:
 function verifyToken(req, res, next) {
+  console.log("headers:");
+  console.log(req.headers.cookie);
   var token = req.headers['x-access-token'];
+  console.log("HERE TOKER FROM VERIFY TOKEN");
+  console.log(token);
   if (!token)
     return res.status(403).send({ auth: false, message: 'No token provided.' });
-  jwt.verify(token, config.secret, function(err, decoded) {
+  jwt.verify(token, jwtSecret, function(err, decoded) {
     if (err)
     return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
     // if everything good, save to request for use in other routes
@@ -88,7 +94,7 @@ app.post('/api/register', function(req, res, next){
             var token = jwt.sign({ id: result.ops[0]._id }, jwtSecret, {
               expiresIn: 86400 // expires in 24 hours
             });
-            res.status(201).send({ auth: true, token: token });
+            res.status(201).send({ auth: true, token: token, email: newUser.email, firstName: newUser.firstName, lastName: newUser.lastName });
             //res.status(201).json(result.ops[0]);
           });
         });
@@ -96,8 +102,9 @@ app.post('/api/register', function(req, res, next){
     });
   });
 });
+//Sign in user
 app.post('/api/login', function (req, res){ //demo login, use jwt stuff
-  db.collection('users').findOne({email: req.body.email}, function(err, result) {
+  db.collection('users').findOne({email: req.body.email}, function(err, result, next) {
     if (err) {
       return next(new Error ('Trouble connecting to the database.'));
     } else if (!result) {
@@ -113,8 +120,9 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
             var token = jwt.sign({ id: result._id }, jwtSecret, {
               expiresIn: 86400 // expires in 24 hours
             });
-            res.status(201).send({ auth: true, token: token });
+            res.status(201).send({ auth: true, token: token, email: result.email, firstName: result.firstName, lastName: result.lastName });
             //USER SIGNED IN
+
             console.log("SIGNED IN");
           } else {
             //INCORRECT EMAIL OR PASSWORD
@@ -142,19 +150,14 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
 });
 
 app.get('/me', verifyToken, function(req, res, next) {  //Set up to test if token is provided
-  User.findById(req.userId, { password: 0 }, function (err, user) {
-    if (err) return res.status(500).send("There was a problem finding the user.");
-    if (!user) return res.status(404).send("No user found.");
-    
-    res.status(200).send(user);
-  });
+  res.send("HFHFH");
 });
 
 app.get('/login', function (req, res){
   res.sendFile(__dirname + '/public/' +'login.html');
 });
 
-app.get('/logout', function(req, res) {
+app.get('/api/logout', function(req, res) {
   res.status(200).send({ auth: false, token: null });
 });
 

@@ -1,6 +1,6 @@
-var myApp = angular.module('WhiteboardApp', []);
+var myApp = angular.module('WhiteboardApp', ['ngCookies']);
 
-myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
+myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
   $scope.signIn = function(){
     var existingUser = {
       email: $scope.email,
@@ -17,6 +17,15 @@ myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
           $scope.errorMessage = response.data.message;
         } else if (response.status == 201) {
           //Good response
+          if (response.data.auth == true) {
+            $cookies.put('token', response.data.token);
+            $cookies.put('email', response.data.email);
+            $cookies.put('firstName', response.data.firstName);
+            $cookies.put('lastName', response.data.lastName);
+            $scope.successMessage = "User signed in. Redirecting.";
+          }
+          console.log("Token MOTHERFUCKER:");
+          console.log(response.data.token);
         } else {
           //Some other Error
           console.log(response.data.message);
@@ -41,6 +50,15 @@ myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
           console.log(response.data.message);
           $scope.errorMessage = response.data.message;
         } else if (response.status == 201) {
+          console.log("Response from login coming next");
+          console.log(response);
+          if (response.data.auth == true) {
+            $cookies.put('token', response.data.token);
+            $cookies.put('email', response.data.email);
+            $cookies.put('firstName', response.data.firstName);
+            $cookies.put('lastName', response.data.lastName);
+            $scope.successMessage = "User created. Redirecting.";
+          }
           //NEW USER CREATED
           //Do something
         }
@@ -49,5 +67,29 @@ myApp.controller('LoginCtrl', ['$scope', '$http', function($scope, $http){
           $scope.errorMessage = response.data.message;
         }
     });
+  };
+  $scope.signOut = function() {
+    $http({
+      method: 'GET',
+      url: '/api/logout'})
+      .then(function(response){
+        if (response.status == 200) {
+          $cookies.remove('token');
+          $cookies.remove('email');
+          $cookies.remove('firstName');
+          $cookies.remove('lastName');
+          //Redirect to login screen
+        } else {
+          //SOME SORT OF ERROR HANDLING WHAT THE FUCK
+        }
+      });
+  };
+  $scope.protectedRoute = function() {
+    $http({
+      method: 'GET',
+      url: '/me',
+      headers: {
+        'x-access-token': $cookies.get('token') 
+      }});
   };
 }]);

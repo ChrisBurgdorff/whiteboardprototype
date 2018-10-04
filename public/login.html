@@ -16,6 +16,7 @@
       <p>Password:</p><input type="password" ng-model="password">
       <button ng-click="signIn()">Sign In</button>
       <p class="errorMessage">{{errorMessage}}</p>
+      <p class="successMessage">{{successMessage}}</p>
       <h2>Register</h2>
       <p>First Name:</p><input type="text" ng-model="firstName">
       <p>Last Name:</p><input type="text" ng-model="lastName">
@@ -23,8 +24,12 @@
       <p>Password:</p><input type="password" ng-model="newPassword">
       <button ng-click="signUp()">Sign Up</button>
       <p class="errorMessage">{{errorMessage}}</p>
+      <p class="successMessage">{{successMessage}}</p>
+      <button ng-click="signOut()">Sign Out</button>
+      <button ng-click="protectedRoute()">Click to go to protected route</button>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-cookies.js"></script>
 	  <script src="controllers/logincontroller.js"></script>
 	</body>
 </html>
