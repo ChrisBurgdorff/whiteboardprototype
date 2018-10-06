@@ -14,7 +14,14 @@ var port = process.env.PORT || 3000;
 var MongoUrl = config.MONGODB_CONNECT_URL;
 var jwtSecret = config.JWT_SECRET;
 //Helper Function
-
+function parseCookie(fullCookie) {
+  var cookieParts = fullCookie.split(';');
+  var token = cookieParts[0].substring(6, cookieParts[0].length);
+  var email = cookieParts[1].substring(7, cookieParts[1].length).replace("%40", "@");
+  var firstName = cookieParts[2].substring(11, cookieParts[2].length);
+  var lastName = cookieParts[3].substring(10, cookieParts[3].length);
+  return token;
+}
 //Start Server and connect to Mongo
 var db;
 MongoClient.connect(MongoUrl, (err, client) => {
@@ -29,11 +36,10 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public"));
 //Verify JWT:
 function verifyToken(req, res, next) {
-  console.log("headers:");
-  console.log(req.headers.cookie);
-  var token = req.headers['x-access-token'];
-  console.log("HERE TOKER FROM VERIFY TOKEN");
-  console.log(token);
+  var token = "";
+  if (req.headers.cookie) {
+    token = parseCookie(req.headers.cookie);
+  }
   if (!token)
     return res.status(403).send({ auth: false, message: 'No token provided.' });
   jwt.verify(token, jwtSecret, function(err, decoded) {
