@@ -9,7 +9,10 @@
 		<title>My App</title>
 	</head>
 	<body>
-		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <div ng-controlloer="LoginCtrl">
+      <button ng-click="signOut()">Sign Out</button>
+    </div>
 		<div ng-controller="MainCtrl">
       <div class="top">
         <h1>This is a new header: No it's not</h1>
@@ -26,7 +29,9 @@
         </div>
       </div>
     </div>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
-		<!--<script src="controllers/maincontroller.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-cookies.js"></script>
+    <script src="/public/controllers/logincontroller.js"></script>
+		<script src="/public/controllers/maincontroller.js"></script>
 	</body>
 </html>

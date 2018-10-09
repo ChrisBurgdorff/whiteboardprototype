@@ -33,18 +33,20 @@ MongoClient.connect(MongoUrl, (err, client) => {
 });
 //Middleware:
 app.use(bodyParser.json());
-app.use(express.static(__dirname + "/public"));
+//app.use(express.static(__dirname + "/public"));
 //Verify JWT:
 function verifyToken(req, res, next) {
   var token = "";
   if (req.headers.cookie) {
     token = parseCookie(req.headers.cookie);
   }
-  if (!token)
-    return res.status(403).send({ auth: false, message: 'No token provided.' });
+  if (!token || token == "")
+    res.redirect('/login');
+    //return res.status(403).send({ auth: false, message: 'No token provided.' });
   jwt.verify(token, jwtSecret, function(err, decoded) {
     if (err)
-    return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    res.redirect('/login');
+    //return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
     // if everything good, save to request for use in other routes
     req.userId = decoded.id;
     next();
@@ -138,25 +140,15 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
         }
       });
     }
-  /*var user = { //replace, get user from DB
-    id: 1,
-    email: "Chris",
-    email: "wesborland"
-  };*/
-  /*jwt.sign({user: user}, config.JWT_SECRET, function (err, token){ //replace secret key with some generated key
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      res.json({
-        token
-      });
-    }
-  });  */
   });
 });
 
 app.get('/me', verifyToken, function(req, res, next) {  //Set up to test if token is provided
   res.send("HFHFH");
+});
+
+app.get('/', verifyToken, function (req, res, next){
+  res.sendFile(__dirname + '/public/' +'index.html');
 });
 
 app.get('/login', function (req, res){
