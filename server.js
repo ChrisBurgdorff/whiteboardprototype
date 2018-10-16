@@ -33,9 +33,12 @@ MongoClient.connect(MongoUrl, (err, client) => {
 });
 //Middleware:
 app.use(bodyParser.json());
-//app.use(express.static(__dirname + "/public"));
+console.log(__dirname + "/public");
+
+app.use(express.static(__dirname + "/public"))
 //Verify JWT:
 function verifyToken(req, res, next) {
+  console.log("In Verify Token");
   var token = "";
   if (req.headers.cookie) {
     token = parseCookie(req.headers.cookie);
@@ -55,7 +58,8 @@ function verifyToken(req, res, next) {
 //Error Handling:
 function errorHandler (err, req, res, next) {
   console.log(err.message);
-  res.status(200).json({message: err.message});
+  res.status = 200;
+  res.json({message: err.message});
 }
 //Routes:
 app.get('/api', function (req, res){ //Demo route unprotected
@@ -148,11 +152,13 @@ app.get('/me', verifyToken, function(req, res, next) {  //Set up to test if toke
 });
 
 app.get('/', verifyToken, function (req, res, next){
-  res.sendFile(__dirname + '/public/' +'index.html');
+  res.sendFile(__dirname + '/public/' +'main.html');
 });
+
 
 app.get('/login', function (req, res){
   res.sendFile(__dirname + '/public/' +'login.html');
+  //res.sendFile('/login.html');
 });
 
 app.get('/api/logout', function(req, res) {
