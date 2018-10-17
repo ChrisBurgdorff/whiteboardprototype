@@ -13,13 +13,28 @@ var app = express();
 var port = process.env.PORT || 3000;
 var MongoUrl = config.MONGODB_CONNECT_URL;
 var jwtSecret = config.JWT_SECRET;
-//Helper Function
+//Helper Functions
+function parseCookies (cookie) {
+  var list = {},
+      rc = cookie;
+  rc && rc.split(';').forEach(function( cookie ) {
+      var parts = cookie.split('=');
+      list[parts[0].trim()] = decodeURI(parts.slice(1).join('='));
+  });
+  return list;
+}
+
 function parseCookie(fullCookie) {
-  var cookieParts = fullCookie.split(';');
-  var token = cookieParts[0].substring(6, cookieParts[0].length);
+  //var cookieParts = fullCookie.split(';');
+  var cookieParts = parseCookies(fullCookie);
+  /*var token = cookieParts[0].substring(6, cookieParts[0].length);
   var email = cookieParts[1].substring(7, cookieParts[1].length).replace("%40", "@");
   var firstName = cookieParts[2].substring(11, cookieParts[2].length);
-  var lastName = cookieParts[3].substring(10, cookieParts[3].length);
+  var lastName = cookieParts[3].substring(10, cookieParts[3].length); */
+  var token = cookieParts.token;
+  var email = cookieParts.email;
+  var firstName = cookieParts.firstName;
+  var lastName = cookieParts.lastName;
   return token;
 }
 //Start Server and connect to Mongo
@@ -43,10 +58,12 @@ function verifyToken(req, res, next) {
   if (req.headers.cookie) {
     token = parseCookie(req.headers.cookie);
   }
+  console.log(token);
   if (!token || token == "")
     res.redirect('/login');
     //return res.status(403).send({ auth: false, message: 'No token provided.' });
   jwt.verify(token, jwtSecret, function(err, decoded) {
+    console.log(decoded);
     if (err)
     res.redirect('/login');
     //return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });

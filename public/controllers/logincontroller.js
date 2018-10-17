@@ -1,4 +1,4 @@
-var myApp = angular.module('WhiteboardApp', ['ngCookies']);
+
 
 myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
   $scope.signIn = function(){
@@ -23,6 +23,7 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
             $cookies.put('firstName', response.data.firstName);
             $cookies.put('lastName', response.data.lastName);
             $scope.successMessage = "User signed in. Redirecting.";
+            window.location.href = '/';
           }
           console.log("Token MOTHERFUCKER:");
           console.log(response.data.token);
@@ -69,16 +70,20 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
     });
   };
   $scope.signOut = function() {
+    console.log("in sign out function");
     $http({
       method: 'GET',
       url: '/api/logout'})
       .then(function(response){
+        console.log("Got response from api/logout");
         if (response.status == 200) {
+          console.log("Response was good");
           $cookies.remove('token');
           $cookies.remove('email');
           $cookies.remove('firstName');
           $cookies.remove('lastName');
           //Redirect to login screen
+          window.location.href = '/login';
         } else {
           //SOME SORT OF ERROR HANDLING WHAT THE FUCK
         }
