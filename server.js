@@ -25,12 +25,7 @@ function parseCookies (cookie) {
 }
 
 function parseCookie(fullCookie) {
-  //var cookieParts = fullCookie.split(';');
   var cookieParts = parseCookies(fullCookie);
-  /*var token = cookieParts[0].substring(6, cookieParts[0].length);
-  var email = cookieParts[1].substring(7, cookieParts[1].length).replace("%40", "@");
-  var firstName = cookieParts[2].substring(11, cookieParts[2].length);
-  var lastName = cookieParts[3].substring(10, cookieParts[3].length); */
   var token = cookieParts.token;
   var email = cookieParts.email;
   var firstName = cookieParts.firstName;
@@ -60,12 +55,12 @@ function verifyToken(req, res, next) {
   }
   console.log(token);
   if (!token || token == "")
-    res.redirect('/login');
+    res.redirect('/start');
     //return res.status(403).send({ auth: false, message: 'No token provided.' });
   jwt.verify(token, jwtSecret, function(err, decoded) {
     console.log(decoded);
     if (err)
-    res.redirect('/login');
+    res.redirect('/start');
     //return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
     // if everything good, save to request for use in other routes
     req.userId = decoded.id;
@@ -79,16 +74,6 @@ function errorHandler (err, req, res, next) {
   res.json({message: err.message});
 }
 //Routes:
-app.get('/api', function (req, res){ //Demo route unprotected
-  res.json({
-    message: "API GET"
-  });
-});
-app.post('/api/post', function (req, res){ //demo protected route
-  res.json({
-    message: "Post created"
-  });
-});
 //Add a new user
 app.post('/api/register', function(req, res, next){
   var schema = {
@@ -163,23 +148,29 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
     }
   });
 });
-
+//Sign out user
+app.get('/api/logout', function(req, res) {
+  res.status(200).send({ auth: false, token: null });
+});
+//Test Protected Route
 app.get('/me', verifyToken, function(req, res, next) {  //Set up to test if token is provided
   res.send("HFHFH");
 });
-
+//Main Page
 app.get('/', verifyToken, function (req, res, next){
   res.sendFile(__dirname + '/public/' +'main.html');
 });
-
-
+//Login PAge
 app.get('/login', function (req, res){
   res.sendFile(__dirname + '/public/' +'login.html');
   //res.sendFile('/login.html');
 });
-
-app.get('/api/logout', function(req, res) {
-  res.status(200).send({ auth: false, token: null });
+//Register Page
+app.get('/register', function (req, res){
+  res.sendFile(__dirname + '/public/' + 'register.html');
+});
+app.get('/start', function(req, res){
+  res.sendFile(__dirname + '/public/' + 'start.html');
 });
 
 app.use(errorHandler);
