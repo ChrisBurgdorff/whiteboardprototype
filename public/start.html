@@ -1,17 +1,41 @@
 <!DOCTYPE>
 <html ng-app="WhiteboardApp">
 	<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
 		<link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Oswald|Montserrat|Raleway' rel='stylesheet' type='text/css'>
-		<link href="styles/style.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <!--<link href="styles/style.css" rel="stylesheet" type="text/css">-->
+    <link href="styles/normalize.css" rel="stylesheet" type="text/css">
+    <link href="styles/skeleton.css" rel="stylesheet" type="text/css">
+    <link href="styles/skeletoncustom.css" rel="stylesheet" type="text/css">
     <!--TODO: CHANGE ICON-->
-		<link rel="shortcut icon" type="image/x-icon" href="https://www.chrisburgdorff.com/cb.ico" />
+		<link rel="shortcut icon" type="image/x-icon" href="images/icon2.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>White-Board.App</title>
+		<title>Whiteboard</title>
 	</head>
 	<body>
 		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<div ng-controller="LoginCtrl">
-      <h2>Register</h2>
+        <div class="section hero">
+            <div class="container">
+              <div class="row">
+                <div class="one-half column hero-foreground">
+                  <h4 class="hero-heading">Project Management at the Speed of Business</h4>
+                  <a class="button button-primary" href="#register">Try Whiteboard Free</a>
+                  <a class="button" href="login">Sign In</a>
+                  <div class="row">
+                    <a href="">Learn More</a>
+                  </div>
+                </div>
+                <div class="one-half column phones">
+                  <img class="phone" src="images/iphone.png">
+                  <img class="phone" src="images/iphone.png">
+                </div>
+              </div>
+            </div>
+          </div>
+      <!--<h2>Register</h2>
       <p>Or <a href="login">Click Here</a> to Sign In.</p>
       <p>First Name:</p><input type="text" ng-model="firstName">
       <p>Last Name:</p><input type="text" ng-model="lastName">
@@ -19,7 +43,7 @@
       <p>Password:</p><input type="password" ng-model="newPassword">
       <button ng-click="signUp()">Sign Up</button>
       <p class="errorMessage">{{errorMessage}}</p>
-      <p class="successMessage">{{successMessage}}</p>
+      <p class="successMessage">{{successMessage}}</p> -->
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-cookies.js"></script>
