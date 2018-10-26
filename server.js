@@ -152,10 +152,8 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
 app.get('/api/logout', function(req, res) {
   res.status(200).send({ auth: false, token: null });
 });
-//Test Protected Route
-app.get('/me', verifyToken, function(req, res, next) {  //Set up to test if token is provided
-  res.send("HFHFH");
-});
+//Edit user
+
 //Main Page
 app.get('/', verifyToken, function (req, res, next){
   res.sendFile(__dirname + '/public/' +'main.html');

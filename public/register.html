@@ -2,24 +2,59 @@
 <html ng-app="WhiteboardApp">
 	<head>
 		<link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Oswald|Montserrat|Raleway' rel='stylesheet' type='text/css'>
-		<link href="styles/style.css" rel="stylesheet" type="text/css">
-    <!--TODO: CHANGE ICON-->
-		<link rel="shortcut icon" type="image/x-icon" href="https://www.chrisburgdorff.com/cb.ico" />
+		<link href='https://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <link href="styles/normalize.css" rel="stylesheet" type="text/css">
+    <link href="styles/skeleton.css" rel="stylesheet" type="text/css">
+    <link href="styles/skeletoncustom.css" rel="stylesheet" type="text/css">
+		<link rel="shortcut icon" type="image/x-icon" href="images/icon2.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>White-Board.App</title>
+		<title>Whiteboard</title>
 	</head>
 	<body>
 		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<div ng-controller="LoginCtrl">
-      <h2>Register</h2>
-      <p>Or <a href="login">Click Here</a> to Sign In.</p>
-      <p>First Name:</p><input type="text" ng-model="firstName">
-      <p>Last Name:</p><input type="text" ng-model="lastName">
-      <p>email:</p><input type="text" ng-model="newEmail">
-      <p>Password:</p><input type="password" ng-model="newPassword">
-      <button ng-click="signUp()">Sign Up</button>
-      <p class="errorMessage">{{errorMessage}}</p>
-      <p class="successMessage">{{successMessage}}</p>
+
+      <div class="logo">
+        <img src="images/logowide.svg">
+      </div>
+      
+      <div class="login">
+        <div class="container">
+          <h3 class="section-heading">Optional: Create a Company or Group</h3>
+          <form ng-submit="#">
+            <div class="row">
+              <div class="six columns">
+                <label for="groupInput">Group Name</label>
+                <input class="u-full-width" type="text" id="emailInput" ng-model="newGroup">
+              </div>
+            </div>
+            <input class="button-primary" type="submit" value="Create">
+            <a class="button" href="/">Maybe Later</a>
+            <p class="errorMessage">{{errorMessage}}</p>
+            <p class="successMessage">{{successMessage}}</p>     
+          </form>
+        </div>
+      </div>
+      
+      <div id="invite">
+        <div class="container">
+          <h3 class="section-heading">Optional: Invite People to Join Your Group</h3>
+          <form ng-submit="">
+            <ul id="invites"></ul>
+            <div class="row">
+              <div class="six columns">
+                <label for="inviteEmail">Email to Invite</label>
+                <input class="" type="email" id="inviteEmail">
+                <input class="button-primary" type="submit" value="Add">
+                <div class="row">
+                  <input class="button" type="button" value="Send Invites" ng-click="#">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-cookies.js"></script>

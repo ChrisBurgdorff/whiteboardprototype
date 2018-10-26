@@ -5,11 +5,9 @@
     <meta name="description" content="">
 		<link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Oswald|Montserrat|Raleway' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
-    <!--<link href="styles/style.css" rel="stylesheet" type="text/css">-->
     <link href="styles/normalize.css" rel="stylesheet" type="text/css">
     <link href="styles/skeleton.css" rel="stylesheet" type="text/css">
     <link href="styles/skeletoncustom.css" rel="stylesheet" type="text/css">
-    <!--TODO: CHANGE ICON-->
 		<link rel="shortcut icon" type="image/x-icon" href="images/icon2.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Whiteboard</title>
@@ -25,7 +23,7 @@
                   <a class="button button-primary" href="#register">Try Whiteboard Free</a>
                   <a class="button" href="login">Sign In</a>
                   <div class="row">
-                    <a href="">Learn More</a>
+                    <a href="#info">Learn More</a>
                   </div>
                 </div>
                 <div class="one-half column phones">
@@ -33,6 +31,89 @@
                   <img class="phone" src="images/iphone.png">
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div class="section values">
+            <div class="container">
+              <div class="row">
+                <div class="one-third column value">
+                  <h5 class="value-heading">Increase Productivity</h5>
+                  <p class="value-description">Everything you need to keep your projects organized. In one easy to use application.</p>
+                </div>
+                <div class="one-third column value">
+                  <h5 class="value-heading">Seamless Cooperation</h5>
+                  <p class="value-description">Share projects with team members. Give full or read only access. Chat instantly with other team members online.</p>
+                </div>
+                <div class="one-third column value">
+                  <h5 class="value-heading">Multi Platform</h5>
+                  <p class="value-description">Access your projects from the web, or mobile apps for iPhone and Android.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section get-help" id="register">
+            <div class="container">
+              <h3 class="section-heading">Sign Up Free</h3>
+              <form ng-submit="signUp()">
+                <div class="row">
+                  <div class="six columns">
+                    <label for="firstNameInput">Your first name</label>
+                    <input class="u-full-width" type="text" id="firstNameInput" ng-model="firstName">
+                  </div>
+                  <div class="six columns">
+                    <label for="lastNameInput">Your last name</label>
+                    <input class="u-full-width" type="text" id="lastNameInput" ng-model="lastName">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="six columns">
+                    <label for="emailInput">Your email</label>
+                    <input class="u-full-width" type="email" id="emailInput" ng-model="newEmail">
+                  </div>
+                  <div class="six columns">
+                    <label for="passwordInput">Your password</label>
+                    <input class="u-full-width" type="password" id="passwordInput" ng-model="newPassword">
+                  </div>
+                </div>
+                <!--Moving to register page
+                <div class="row">
+                    <label for="companyInput">Company or group</label>
+                    <input class="u-full-width" type="text" id="companyInput">
+                </div>
+                -->
+                <input class="button-primary" type="submit" value="Sign Up">
+                <p class="errorMessage">{{errorMessage}}</p>
+                <p class="successMessage">{{successMessage}}</p>     
+              </form>
+            </div>
+          </div>
+
+          <div class="section categories" id="info">
+            <div class="container">
+              <h3 class="section-heading">Find Out More</h3>
+              <p class="section-description">Watch the videos below to find out more about what Whiteboard can do for you and your business.</p>
+              <div class="row">
+                <div class="one-half column category">
+                  <a href="https://www.youtube.com/watch?v=oHg5SJYRHA0">
+                    <img class="u-max-full-width" src="images/team-min.jpg">
+                  </a>
+                </div>
+                <div class="one-half column category">
+                  <a href="https://www.youtube.com/watch?v=oHg5SJYRHA0">
+                    <img class="u-max-full-width" src="images/phone-min.jpg">
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!--Footer-->
+          <div class="section">
+            <div class="container">
+              <h3 class="section-heading">Contact us for a demo today!</h3>
+              <a href="mailto:contact@white-board.app">contact@white-board.app</a>
             </div>
           </div>
       <!--<h2>Register</h2>

@@ -13,6 +13,11 @@
   margin-bottom: 1.2rem;
 }
 
+.logo {
+  text-align: center;
+  padding: 2rem 0;
+}
+
 /* Hero */
 .phones {
   position: relative;
@@ -150,5 +155,11 @@
     border-radius: 2rem;
     background-color: rgba(255,255,255, 0.9);
     padding: 2rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .logo {
+    display: none;
   }
 }
