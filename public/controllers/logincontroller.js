@@ -1,6 +1,36 @@
 
 
 myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
+  //SCOPE VARS
+  $scope.createGroupShow = true;
+  $scope.invitePeopleShow = false;
+  $scope.emailsToInvite = [];
+  //HELPER FUNCTIONS
+  function validateEmail(email) {
+    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    if (!filter.test(email)) {
+      alert('Please provide a valid email address');
+      return false;
+    } else {
+      return true;
+    }
+  }
+  function getUserIfCookie() {
+    if ($cookies.get('email')) {
+      var email = $cookies.get('email');
+      console.log(email);
+      $http({
+        method: 'GET',
+        url: '/api/user/' + email
+      }).then(function(result){
+        console.log("IN getUserIfCookie");
+        console.log(result.data);
+        $scope.userId = result.data._id;
+      });
+    }    
+  }
+  getUserIfCookie();
+  //SCOPE FUNCTIONS
   $scope.signIn = function(){
     var existingUser = {
       email: $scope.email,
@@ -59,6 +89,7 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
             $cookies.put('firstName', response.data.firstName);
             $cookies.put('lastName', response.data.lastName);
             $scope.successMessage = "User created. Redirecting.";
+            window.location.href = '/register';
           }
           //NEW USER CREATED
           //Do something
@@ -88,6 +119,56 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
           //SOME SORT OF ERROR HANDLING WHAT THE FUCK
         }
       });
+  };
+  //createGroup() addInvite() sendInvites()
+  $scope.createGroup = function() {
+    var email = $cookies.get('email');
+    var newGroup = {
+      name: $scope.groupName,
+      admins: [email],
+      users: [email],
+      projects: [],
+      teams: []
+    };
+    var newUser = {
+      group: $scope.groupName
+    };
+    $http({
+      method: 'POST',
+      url: '/api/group',
+      data: newGroup})
+      .then(function(result) {
+        console.log("about to put user");
+        console.log($scope.userId);
+        $http({
+          method: 'PUT',
+          ///api/usergroup/:id
+          url: '/api/usergroup/' + $scope.userId,
+          data: newUser
+        })
+        .then(function(res){
+          $scope.createGroupShow = false;
+          $scope.invitePeopleShow = true;
+        });
+      });    
+  };
+  $scope.addInvite = function() {
+    if ($scope.emailToInvite) {
+      if ($scope.emailToInvite != "") {
+        if (validateEmail($scope.emailToInvite)) {
+          $scope.emailsToInvite.push($scope.emailToInvite);
+          $scope.emailToInvite = "";
+        }
+      }
+    }
+  };
+  $scope.removeInvite = function(index) {
+    $scope.emailsToInvite.splice(index, 1);
+  };
+  $scope.sendInvites = function() {
+    alert("Invites have been sent!");
+    $scope.emailsToInvite = [];
+    $scope.emailToInvite = "";
   };
   $scope.protectedRoute = function() {
     $http({

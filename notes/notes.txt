@@ -49,3 +49,6 @@ McAfeeSecure Seal:
 
 Update to NPM:
 "npm i npm"
+
+//Attributions:
+Trash by Bayu Apriansyah Kandhihawa from the Noun Project

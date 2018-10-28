@@ -2,6 +2,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var jwt = require('jsonwebtoken');
+var mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
 var bcrypt = require('bcryptjs');
 var joi = require('joi');
@@ -152,8 +153,58 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
 app.get('/api/logout', function(req, res) {
   res.status(200).send({ auth: false, token: null });
 });
+//Add a new Group
+app.post('/api/group', verifyToken, function (req, res){
+  db.collection('groups').findOne({name: req.body.name}, function(err, result) {
+    if (err) {
+      return next(new Error('Trouble connecting to the database.'));
+    } else if (result) {
+      return next(new Error("Group name already registered. Please try a different name."));
+    } else {
+      var newGroup = {
+        name: req.body.name,
+        admins: req.body.admins,
+        users: req.body.users,
+        projects: req.body.projects,
+        teams: req.body.teams
+      };
+      db.collection('groups').insertOne(newGroup, function(err, result){
+        if (err) {return next(err);}
+        res.status(201).send({ name: newGroup.name, admin: newGroup.admin });
+      });
+    }
+  });
+});
 //Edit user
-
+app.put('/api/usergroup/:id', verifyToken, function (req, res) {
+  var id = req.params.id;
+  console.log(id);
+  console.log(req.body.group);
+  db.collection('users').updateOne({_id: new mongodb.ObjectID(id)},
+    {$set: {
+        group: req.body.group}}, 
+	function (err, doc) {
+      res.json(doc);
+    }
+  );
+});
+//GET USER BY Email
+app.get('/api/user/:email', verifyToken, function (req, res, next) {
+  console.log(req.params.email);
+  db.collection('users').findOne({email: req.params.email}, function(err, result, next) {
+    if (err) {
+      return next(new Error ('Trouble connecting to the database.'));
+    } else if (!result) {
+      return next(new Error('User not registered.'));
+    } else if (result) {
+      res.json(result);
+    }
+  });
+});
+//Send Invite Emails
+app.post('/api/invite', verifyToken, function(req, res, next) {
+  //START HERE with Nodemailer
+});
 //Main Page
 app.get('/', verifyToken, function (req, res, next){
   res.sendFile(__dirname + '/public/' +'main.html');

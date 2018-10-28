@@ -16,40 +16,50 @@
 
       <div class="logo">
         <img src="images/logowide.svg">
-      </div>
+      </div> 
       
-      <div class="login">
+      <div class="login" ng-show="createGroupShow">
         <div class="container">
           <h3 class="section-heading">Optional: Create a Company or Group</h3>
-          <form ng-submit="#">
+          <form ng-submit="createGroup()">
             <div class="row">
               <div class="six columns">
                 <label for="groupInput">Group Name</label>
-                <input class="u-full-width" type="text" id="emailInput" ng-model="newGroup">
+                <input class="u-full-width" type="text" id="groupInput" ng-model="groupName">
               </div>
             </div>
             <input class="button-primary" type="submit" value="Create">
             <a class="button" href="/">Maybe Later</a>
             <p class="errorMessage">{{errorMessage}}</p>
-            <p class="successMessage">{{successMessage}}</p>     
+            <p class="successMessage">{{successMessage}}</p>
+            <p>{{email}}</p>
+            <p>{{password}}</p> 
           </form>
         </div>
       </div>
       
-      <div id="invite">
+      <div id="invite" ng-show="invitePeopleShow">
         <div class="container">
           <h3 class="section-heading">Optional: Invite People to Join Your Group</h3>
-          <form ng-submit="">
-            <ul id="invites"></ul>
+          <form ng-submit="addInvite()">
+            <ul id="invites">
+              <li ng-repeat="email in emailsToInvite">
+                {{email}}
+                <a ng-click="removeInvite($index)"><img class="trash" src="images/trashicon.svg"></a>
+              </li>
+            </ul>
             <div class="row">
               <div class="six columns">
                 <label for="inviteEmail">Email to Invite</label>
-                <input class="" type="email" id="inviteEmail">
+                <input class="" type="email" id="inviteEmail" ng-model="emailToInvite">
                 <input class="button-primary" type="submit" value="Add">
-                <div class="row">
-                  <input class="button" type="button" value="Send Invites" ng-click="#">
-                </div>
               </div>
+            </div>
+            <div class="row">
+              <input class="button-primary" type="button" value="Send Invites" ng-click="sendInvites()">
+            </div>
+            <div class="row">
+              <a class="button" href="/">Maybe Later</a>
             </div>
           </form>
         </div>
