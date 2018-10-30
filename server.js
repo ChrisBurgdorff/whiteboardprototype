@@ -6,10 +6,13 @@ var mongodb = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
 var bcrypt = require('bcryptjs');
 var joi = require('joi');
+var nodemailer = require('nodemailer');
 //Custom modules
 var config = require('./config');
 //Instantiate Modules
 var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 //Variables
 var port = process.env.PORT || 3000;
 var MongoUrl = config.MONGODB_CONNECT_URL;
@@ -204,6 +207,38 @@ app.get('/api/user/:email', verifyToken, function (req, res, next) {
 //Send Invite Emails
 app.post('/api/invite', verifyToken, function(req, res, next) {
   //START HERE with Nodemailer
+  //Redirect to home page after is done
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'whiteboardinvite@gmail.com',
+      pass: 'BluePanWindow732!'
+    }
+  });
+  //console.log(req.data);
+  var invites = req.body.emails;
+  var sendField = "";
+  for (var i = 0; i < invites.length; i++) {
+    sendField = sendField + invites[i] + ", ";
+  }
+  sendField = sendField.substring(0, sendField.length - 2);
+  console.log(sendField);
+  var mailOptions = {
+    from: 'Whiteboard Invite',
+    to: 'whiteboardinvite@gmail.com',
+    bcc: sendField,
+    subject: 'Invitation to Join Whiteboard',
+    text: 'Boom. Done',
+    html: ''
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log ('email sent');
+      res.send({response: 'Sent'});
+    }
+  });
 });
 //Main Page
 app.get('/', verifyToken, function (req, res, next){
@@ -224,3 +259,10 @@ app.get('/start', function(req, res){
 
 app.use(errorHandler);
 
+//SOCKET STUFF
+io.on('connection', function(socket) {
+  console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected')
+  });
+});

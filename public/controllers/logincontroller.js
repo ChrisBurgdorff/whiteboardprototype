@@ -166,9 +166,20 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
     $scope.emailsToInvite.splice(index, 1);
   };
   $scope.sendInvites = function() {
-    alert("Invites have been sent!");
-    $scope.emailsToInvite = [];
-    $scope.emailToInvite = "";
+    var invites = {
+      emails: $scope.emailsToInvite
+    };
+    $http({
+      method: 'POST',
+      url: '/api/invite',
+      data: invites
+    })
+    .then(function(res) {
+      alert("Invites have been sent!");
+      $scope.emailsToInvite = [];
+      $scope.emailToInvite = "";
+      window.location.href = "/";
+    });    
   };
   $scope.protectedRoute = function() {
     $http({
