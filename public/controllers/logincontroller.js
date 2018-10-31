@@ -143,10 +143,13 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
       url: '/api/group',
       data: newGroup})
       .then(function(result) {
+        console.log(result);
         console.log(result.data._id);
+        console.log(result.data);
         $scope.currentCompanyId = result.data._id;
         console.log("about to put user");
         console.log($scope.currentUserId);
+        console.log($scope.currentCompanyId);
         $http({
           method: 'PUT',
           ///api/usergroup/:id

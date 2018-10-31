@@ -12,8 +12,8 @@ const uuidv4 = require('uuid/v4');
 var config = require('./config');
 //Instantiate Modules
 var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 //Variables
 var port = process.env.PORT || 3000;
 var MongoUrl = config.MONGODB_CONNECT_URL;
@@ -42,7 +42,7 @@ var db;
 MongoClient.connect(MongoUrl, (err, client) => {
   if (err) return console.log(err);
   db = client.db('whiteboarddb');
-  app.listen(port, function() {
+  server.listen(port, function() {
     console.log("App is listening on port 3000.")
   });
 });
@@ -176,7 +176,8 @@ app.post('/api/group', verifyToken, function (req, res){
       };
       db.collection('groups').insertOne(newGroup, function(err, result){
         if (err) {return next(err);}
-        res.status(201).send({ name: newGroup.name, admin: newGroup.admin });
+        //res.status(201).send({ name: newGroup.name, admin: newGroup.admin });
+        res.status(201).send(newGroup);
       });
     }
   });
@@ -246,9 +247,8 @@ app.post('/api/invite', verifyToken, function(req, res, next) {
       //res.send({response: 'Sent'});
       db.collection('groups').updateOne({_id: new mongodb.ObjectID(req.body.companyId)},
         {$push: {
-            invitedEmails: {$each: invites}},
-         $push: {
-            inviteIds: uid
+            inviteIds: uid,
+            invitedEmails: {$each: invites}
           }}, 
         function (err, doc) {
           res.json(doc);
@@ -270,9 +270,12 @@ app.get('/login', function (req, res){
 app.get('/register', function (req, res){
   res.sendFile(__dirname + '/public/' + 'register.html');
 });
+//Landing Page
 app.get('/start', function(req, res){
   res.sendFile(__dirname + '/public/' + 'start.html');
 });
+//Invite Page
+//TODO: FINISH THIS PAGE
 
 app.use(errorHandler);
 
