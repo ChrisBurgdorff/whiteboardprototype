@@ -7,6 +7,7 @@ var MongoClient = require('mongodb').MongoClient;
 var bcrypt = require('bcryptjs');
 var joi = require('joi');
 var nodemailer = require('nodemailer');
+const uuidv4 = require('uuid/v4');
 //Custom modules
 var config = require('./config');
 //Instantiate Modules
@@ -169,7 +170,9 @@ app.post('/api/group', verifyToken, function (req, res){
         admins: req.body.admins,
         users: req.body.users,
         projects: req.body.projects,
-        teams: req.body.teams
+        teams: req.body.teams,
+        invitedEmails: req.body.invitedEmails,
+        inviteIds: req.body.inviteIds
       };
       db.collection('groups').insertOne(newGroup, function(err, result){
         if (err) {return next(err);}
@@ -208,6 +211,7 @@ app.get('/api/user/:email', verifyToken, function (req, res, next) {
 app.post('/api/invite', verifyToken, function(req, res, next) {
   //START HERE with Nodemailer
   //Redirect to home page after is done
+  var uid = uuidv4();
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -218,6 +222,7 @@ app.post('/api/invite', verifyToken, function(req, res, next) {
   //console.log(req.data);
   var invites = req.body.emails;
   var sendField = "";
+  var href = "https://www.white-board.app/invite/?compid=" + req.body.companyId + "&uuid=" + uid;
   for (var i = 0; i < invites.length; i++) {
     sendField = sendField + invites[i] + ", ";
   }
@@ -228,15 +233,27 @@ app.post('/api/invite', verifyToken, function(req, res, next) {
     to: 'whiteboardinvite@gmail.com',
     bcc: sendField,
     subject: 'Invitation to Join Whiteboard',
-    text: 'Boom. Done',
-    html: ''
+    text: 'You have been invited to join Whiteboard. Click here to join: ' + href,
+    html: '<h3>You have been invited to join Whiteboard by ' + req.body.fromName 
+      + '.</h3><p>Click the link below to sign up:</p><a href="' + href + '">Sign Up for Whiteboard</a>'
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
     } else {
       console.log ('email sent');
-      res.send({response: 'Sent'});
+      //Update DB to save uid;
+      //res.send({response: 'Sent'});
+      db.collection('groups').updateOne({_id: new mongodb.ObjectID(req.body.companyId)},
+        {$push: {
+            invitedEmails: {$each: invites}},
+         $push: {
+            inviteIds: uid
+          }}, 
+        function (err, doc) {
+          res.json(doc);
+        }
+      );
     }
   });
 });

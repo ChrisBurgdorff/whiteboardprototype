@@ -25,7 +25,10 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
       }).then(function(result){
         console.log("IN getUserIfCookie");
         console.log(result.data);
-        $scope.userId = result.data._id;
+        $scope.currentUserId = result.data._id;
+        $scope.currentFirstName = result.data.firstName;
+        $scope.currentLastName = result.data.lastName;
+        $scope.currentEmail = result.data.email;
       });
     }    
   }
@@ -128,7 +131,9 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
       admins: [email],
       users: [email],
       projects: [],
-      teams: []
+      teams: [],
+      invitedEmails: [],
+      inviteIds: []
     };
     var newUser = {
       group: $scope.groupName
@@ -138,12 +143,14 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
       url: '/api/group',
       data: newGroup})
       .then(function(result) {
+        console.log(result.data._id);
+        $scope.currentCompanyId = result.data._id;
         console.log("about to put user");
-        console.log($scope.userId);
+        console.log($scope.currentUserId);
         $http({
           method: 'PUT',
           ///api/usergroup/:id
-          url: '/api/usergroup/' + $scope.userId,
+          url: '/api/usergroup/' + $scope.currentUserId,
           data: newUser
         })
         .then(function(res){
@@ -156,8 +163,12 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
     if ($scope.emailToInvite) {
       if ($scope.emailToInvite != "") {
         if (validateEmail($scope.emailToInvite)) {
-          $scope.emailsToInvite.push($scope.emailToInvite);
-          $scope.emailToInvite = "";
+          if($scope.emailsToInvite.length < 20) {
+            $scope.emailsToInvite.push($scope.emailToInvite);
+            $scope.emailToInvite = "";
+          } else {
+            $scope.errorMessage = "At most 20 invitations can be sent at one time. You can send more tomorrow, or for enterprise help, contact our support.";
+          }
         }
       }
     }
@@ -165,9 +176,12 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $
   $scope.removeInvite = function(index) {
     $scope.emailsToInvite.splice(index, 1);
   };
-  $scope.sendInvites = function() {
+  $scope.sendInvites = function() {    
+    //var inviteId = uuidv4();
     var invites = {
-      emails: $scope.emailsToInvite
+      emails: $scope.emailsToInvite,
+      fromName: $scope.currentFirstName + " " + $scope.currentLastName,
+      companyId: $scope.currentCompanyId
     };
     $http({
       method: 'POST',
