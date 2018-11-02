@@ -23,7 +23,9 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$location', funct
       method: 'GET',
       url: '/api/group/' + $scope.groupid
     }).then(function(result){
-      $scope.groupName = result.name;
+      console.log(result);
+      console.log(result.data);
+      $scope.groupName = result.data.name;
     });
   }
   //HELPER FUNCTIONS

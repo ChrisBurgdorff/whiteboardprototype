@@ -191,6 +191,7 @@ app.get('/api/group/:id', function(req, res, next){
     } else if (!result) {
       return next(new Error('Group not found.'));
     } else {
+      console.log(result);
       res.json(result);
     }
   });
