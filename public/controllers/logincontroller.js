@@ -199,6 +199,44 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$location', funct
       }
     }
   };
+  $scope.signUpFromInvite = function() {
+    var newUser = {
+      firstName: $scope.firstName,
+      lastName: $scope.lastName,
+      email: $scope.newEmail,
+      password: $scope.password,
+      group: $scope.groupName,
+      uuid: $scope.uuid,
+      groupid: $scope.groupid
+    };
+    $http({
+      method: 'POST',
+      url: '/api/registerfrominvite',
+      data: newUser})
+      .then(function(response){
+        if (response.status == 200) {
+          console.log(response.data.message);
+          $scope.errorMessage = response.data.message;
+        } else if (response.status == 201) {
+          console.log("Response from login coming next");
+          console.log(response);
+          if (response.data.auth == true) {
+            $cookies.put('token', response.data.token);
+            $cookies.put('email', response.data.email);
+            $cookies.put('firstName', response.data.firstName);
+            $cookies.put('lastName', response.data.lastName);
+            $scope.successMessage = "User created. Redirecting.";
+            window.location.href = '/register';
+          }
+          //NEW USER CREATED
+          //Do something
+        }
+        else {
+          console.log(response.data.message);
+          $scope.errorMessage = response.data.message;
+        }
+      });
+  };
   $scope.removeInvite = function(index) {
     $scope.emailsToInvite.splice(index, 1);
   };
