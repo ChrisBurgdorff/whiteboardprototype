@@ -182,6 +182,19 @@ app.post('/api/group', verifyToken, function (req, res){
     }
   });
 });
+//Get group by id
+app.get('/api/group/:id', function(req, res, next){
+  var id = req.params.id;
+  db.collection('groups').findOne({_id: new mongodb.ObjectID(id)}, function (err, result, next){
+    if (err) {
+      return next(new Error ('Trouble conecting to the database.'))
+    } else if (!result) {
+      return next(new Error('Group not found.'));
+    } else {
+      res.json(result);
+    }
+  });
+});
 //Edit user
 app.put('/api/usergroup/:id', verifyToken, function (req, res) {
   var id = req.params.id;
@@ -223,7 +236,7 @@ app.post('/api/invite', verifyToken, function(req, res, next) {
   //console.log(req.data);
   var invites = req.body.emails;
   var sendField = "";
-  var href = "https://www.white-board.app/invite/?compid=" + req.body.companyId + "&uuid=" + uid;
+  var href = "https://www.white-board.app/invite?compid=" + req.body.companyId + "&uuid=" + uid;
   for (var i = 0; i < invites.length; i++) {
     sendField = sendField + invites[i] + ", ";
   }
@@ -276,6 +289,9 @@ app.get('/start', function(req, res){
 });
 //Invite Page
 //TODO: FINISH THIS PAGE
+app.get('/invite', function(req, res){
+  res.sendFile(__dirname + '/public/' + 'invite.html');
+});
 
 app.use(errorHandler);
 

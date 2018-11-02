@@ -1,10 +1,31 @@
+myApp.config(['$locationProvider', function($locationProvider){
+  //$locationProvider.html5Mode(true); 
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+  });
+}]);
 
-
-myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
+myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$location', function($scope, $http, $cookies, $location){
   //SCOPE VARS
   $scope.createGroupShow = true;
   $scope.invitePeopleShow = false;
   $scope.emailsToInvite = [];
+  //Check Query String for invite function
+  console.log($location.search().compid);
+  console.log($location.search().uuid);
+  //var groupid = req.query.compid;
+  //var uuid = req.query.uuid;
+  $scope.getInviteInfo = function() {
+    $scope.groupid = $location.search().compid;
+    $scope.uuid = $location.search().uuid;
+    $http({
+      method: 'GET',
+      url: '/api/group/' + $scope.groupid
+    }).then(function(result){
+      $scope.groupName = result.name;
+    });
+  }
   //HELPER FUNCTIONS
   function validateEmail(email) {
     var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;

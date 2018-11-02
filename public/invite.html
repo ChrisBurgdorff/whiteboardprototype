@@ -12,33 +12,40 @@
 	</head>
 	<body>
 		<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-		<div ng-controller="LoginCtrl">
+		<div ng-controller="LoginCtrl" ng-init="getInviteInfo()">
       
       <div class="logo">
         <img src="images/logowide2.svg">
       </div>
-      
-      <div class="login">
+
+      <div class="section get-help" id="register">
         <div class="container">
-          <h3 class="section-heading">Sign In</h3>
-          <form ng-submit="signIn()">
+          <h3 class="section-heading">Join {{groupName}}</h3>
+          <form ng-submit="signUp()">
+            <div class="row">
+              <div class="six columns">
+                <label for="firstNameInput">Your first name</label>
+                <input class="u-full-width" type="text" id="firstNameInput" ng-model="firstName">
+              </div>
+              <div class="six columns">
+                <label for="lastNameInput">Your last name</label>
+                <input class="u-full-width" type="text" id="lastNameInput" ng-model="lastName">
+              </div>
+            </div>
             <div class="row">
               <div class="six columns">
                 <label for="emailInput">Your email</label>
-                <input class="u-full-width" type="email" id="emailInput" ng-model="email">
+                <input class="u-full-width" type="email" id="emailInput" ng-model="newEmail">
               </div>
-            </div>
-            <div class="row">
               <div class="six columns">
                 <label for="passwordInput">Your password</label>
-                <input class="u-full-width" type="password" id="passwordInput" ng-model="password">
+                <input class="u-full-width" type="password" id="passwordInput" ng-model="newPassword">
               </div>
             </div>
-            <input class="button-primary" type="submit" value="Sign In">
+            <input class="button-primary" type="submit" value="Sign Up">
             <p class="errorMessage">{{errorMessage}}</p>
             <p class="successMessage">{{successMessage}}</p>     
           </form>
-          <a href="start#register">No Account? Sign up here.</a>
         </div>
       </div>
 
@@ -47,5 +54,5 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular-cookies.js"></script>
     <script src="/controllers/app.js"></script>
     <script src="/controllers/logincontroller.js"></script>
-	</body>
+  </body>
 </html>
