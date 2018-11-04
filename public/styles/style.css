@@ -121,3 +121,11 @@ WebKit inertia scrolling is being added here for any present/future devices that
 /*-------------------------------------------------------*/
 /*------------End of multi column scroll test------------*/
 /*-------------------------------------------------------*/
+.chat {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border: 1px solid black;
+  width: 10rem;
+  height: 20rem;
+}

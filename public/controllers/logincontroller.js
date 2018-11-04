@@ -52,6 +52,7 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$location', funct
         $scope.currentFirstName = result.data.firstName;
         $scope.currentLastName = result.data.lastName;
         $scope.currentEmail = result.data.email;
+        $scope.currentGroup = result.data.group;
       });
     }    
   }
@@ -204,7 +205,7 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$location', funct
       firstName: $scope.firstName,
       lastName: $scope.lastName,
       email: $scope.newEmail,
-      password: $scope.password,
+      password: $scope.newPassword,
       group: $scope.groupName,
       uuid: $scope.uuid,
       groupid: $scope.groupid
@@ -214,6 +215,8 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$location', funct
       url: '/api/registerfrominvite',
       data: newUser})
       .then(function(response){
+        console.log("IN POST IN SIGNUPFROMINVITE");
+        console.log(response.data);
         if (response.status == 200) {
           console.log(response.data.message);
           $scope.errorMessage = response.data.message;
@@ -226,7 +229,7 @@ myApp.controller('LoginCtrl', ['$scope', '$http', '$cookies', '$location', funct
             $cookies.put('firstName', response.data.firstName);
             $cookies.put('lastName', response.data.lastName);
             $scope.successMessage = "User created. Redirecting.";
-            window.location.href = '/register';
+            window.location.href = '/';
           }
           //NEW USER CREATED
           //Do something

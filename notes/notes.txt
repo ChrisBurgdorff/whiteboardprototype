@@ -2,6 +2,9 @@ To Save:
 Stage and commit locally
 then in terminal "git push origin master"
 
+Ideas and to-do:
+check if admin for 'register page', better yet: new users only!
+
 Fonts:
 Open Sans:
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">

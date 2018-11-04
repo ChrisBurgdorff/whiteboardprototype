@@ -75,8 +75,8 @@ function verifyToken(req, res, next) {
 //Error Handling:
 function errorHandler (err, req, res, next) {
   console.log(err.message);
-  res.status = 200;
-  res.json({message: err.message});
+  res.status(200).json({message: err.message});
+  //res.json({message: err.message});
 }
 //Routes:
 //Add a new user
@@ -122,7 +122,7 @@ app.post('/api/register', function(req, res, next){
   });
 });
 //ADD a new user from invite, add to group
-app.post('/api/registerfrominvite', function (req, res) {
+app.post('/api/registerfrominvite', function (req, res, next) {
   var schema = {
     firstName: joi.string().alphanum().min(1).max(50).required(),
     lastName: joi.string().alphanum().min(1).max(50).required(),
@@ -132,21 +132,28 @@ app.post('/api/registerfrominvite', function (req, res) {
     uuid: joi.string(),
     groupid: joi.string()
   };
+  console.log(req.body);
   joi.validate(req.body, schema, function(err, value){
     if (err) {
+      console.log("1");
       return next(new Error('Please enter a valid email and a password between 6 and 100 characters'));
     }
-    db.collection(group).findOne({_id: new mongodb.ObjectID(req.body.groupid)}, function (err, result, next){
+    db.collection('groups').findOne({_id: new mongodb.ObjectID(req.body.groupid)}, function (err, result){
       if (err) {
+        console.log("2");
         return next(new Error ('Trouble connecting to the database.'));
       } else if (!result) {
+        console.log("3");
         return next(new Error('Group not found.'));
       } else if (result) {
         if (! result.invitedEmails.includes(req.body.email.toLowerCase())) {
+          console.log("4");
           return next(new Error('Please use the email where you recieved the invite.'));
         } else if (! result.inviteIds.includes(req.body.uuid)) {
+          console.log("5");
           return next(new Error('Invite ID does not match.'));
         } else {
+          console.log("6");
           //Everything matches, save user and update group!
           var newUser = {
             firstName: req.body.firstName,
@@ -157,9 +164,11 @@ app.post('/api/registerfrominvite', function (req, res) {
           };
           bcrypt.hash(req.body.password, 10, function getHash(err, hash) {
             if (err) {return next(err);}
+            console.log("7");
             newUser.password = hash;
             db.collection('users').insertOne(newUser, function(err, result){
-              if (err) {return next(err);}
+              console.log("8");
+              if (err) {console.log("9");return next(err);}
               // create a token
               //console.log(result);
               var token = jwt.sign({ id: result.ops[0]._id }, jwtSecret, {
@@ -169,6 +178,7 @@ app.post('/api/registerfrominvite', function (req, res) {
                 {$push: {
                   users: req.body.email
                 }}, function (err2, result2) {
+                  console.log("10");
                   res.status(201).send({ auth: true, token: token, email: newUser.email, firstName: newUser.firstName, lastName: newUser.lastName });
               });
             });
@@ -355,7 +365,7 @@ app.use(errorHandler);
 
 //SOCKET STUFF
 io.on('connection', function(socket) {
-  console.log('a user connected');
+  console.log(socket.id);
   socket.on('disconnect', function(){
     console.log('user disconnected')
   });
