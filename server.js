@@ -18,6 +18,7 @@ var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 var MongoUrl = config.MONGODB_CONNECT_URL;
 var jwtSecret = config.JWT_SECRET;
+var clients = {};
 //Helper Functions
 function parseCookies (cookie) {
   var list = {},
@@ -48,22 +49,22 @@ MongoClient.connect(MongoUrl, (err, client) => {
 });
 //Middleware:
 app.use(bodyParser.json());
-console.log(__dirname + "/public");
+//console.log(__dirname + "/public");
 
 app.use(express.static(__dirname + "/public"))
 //Verify JWT:
 function verifyToken(req, res, next) {
-  console.log("In Verify Token");
+  //console.log("In Verify Token");
   var token = "";
   if (req.headers.cookie) {
     token = parseCookie(req.headers.cookie);
   }
-  console.log(token);
+  //console.log(token);
   if (!token || token == "")
     res.redirect('/start');
     //return res.status(403).send({ auth: false, message: 'No token provided.' });
   jwt.verify(token, jwtSecret, function(err, decoded) {
-    console.log(decoded);
+    //console.log(decoded);
     if (err)
     res.redirect('/start');
     //return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
@@ -132,28 +133,28 @@ app.post('/api/registerfrominvite', function (req, res, next) {
     uuid: joi.string(),
     groupid: joi.string()
   };
-  console.log(req.body);
+  //console.log(req.body);
   joi.validate(req.body, schema, function(err, value){
     if (err) {
-      console.log("1");
+      //console.log("1");
       return next(new Error('Please enter a valid email and a password between 6 and 100 characters'));
     }
     db.collection('groups').findOne({_id: new mongodb.ObjectID(req.body.groupid)}, function (err, result){
       if (err) {
-        console.log("2");
+        //console.log("2");
         return next(new Error ('Trouble connecting to the database.'));
       } else if (!result) {
-        console.log("3");
+        //console.log("3");
         return next(new Error('Group not found.'));
       } else if (result) {
         if (! result.invitedEmails.includes(req.body.email.toLowerCase())) {
-          console.log("4");
+          //console.log("4");
           return next(new Error('Please use the email where you recieved the invite.'));
         } else if (! result.inviteIds.includes(req.body.uuid)) {
-          console.log("5");
+          //console.log("5");
           return next(new Error('Invite ID does not match.'));
         } else {
-          console.log("6");
+          //console.log("6");
           //Everything matches, save user and update group!
           var newUser = {
             firstName: req.body.firstName,
@@ -164,10 +165,10 @@ app.post('/api/registerfrominvite', function (req, res, next) {
           };
           bcrypt.hash(req.body.password, 10, function getHash(err, hash) {
             if (err) {return next(err);}
-            console.log("7");
+            //console.log("7");
             newUser.password = hash;
             db.collection('users').insertOne(newUser, function(err, result){
-              console.log("8");
+              //console.log("8");
               if (err) {console.log("9");return next(err);}
               // create a token
               //console.log(result);
@@ -178,7 +179,7 @@ app.post('/api/registerfrominvite', function (req, res, next) {
                 {$push: {
                   users: req.body.email
                 }}, function (err2, result2) {
-                  console.log("10");
+                  //console.log("10");
                   res.status(201).send({ auth: true, token: token, email: newUser.email, firstName: newUser.firstName, lastName: newUser.lastName });
               });
             });
@@ -201,8 +202,8 @@ app.post('/api/login', function (req, res){ //demo login, use jwt stuff
           return next(err);
         } else {
           if (resb) {
-            console.log("RESULT COMING MOTHERFUCKER");
-            console.log(result);
+            //console.log("RESULT COMING MOTHERFUCKER");
+            //console.log(result);
             var token = jwt.sign({ id: result._id }, jwtSecret, {
               expiresIn: 86400 // expires in 24 hours
             });
@@ -258,7 +259,7 @@ app.get('/api/group/:id', function(req, res, next){
     } else if (!result) {
       return next(new Error('Group not found.'));
     } else {
-      console.log(result);
+      //console.log(result);
       res.json(result);
     }
   });
@@ -266,8 +267,8 @@ app.get('/api/group/:id', function(req, res, next){
 //Edit user
 app.put('/api/usergroup/:id', verifyToken, function (req, res) {
   var id = req.params.id;
-  console.log(id);
-  console.log(req.body.group);
+  //console.log(id);
+  //console.log(req.body.group);
   db.collection('users').updateOne({_id: new mongodb.ObjectID(id)},
     {$set: {
         group: req.body.group}}, 
@@ -278,7 +279,7 @@ app.put('/api/usergroup/:id', verifyToken, function (req, res) {
 });
 //GET USER BY Email
 app.get('/api/user/:email', verifyToken, function (req, res, next) {
-  console.log(req.params.email);
+  //console.log(req.params.email);
   db.collection('users').findOne({email: req.params.email}, function(err, result, next) {
     if (err) {
       return next(new Error ('Trouble connecting to the database.'));
@@ -309,7 +310,7 @@ app.post('/api/invite', verifyToken, function(req, res, next) {
     sendField = sendField + invites[i] + ", ";
   }
   sendField = sendField.substring(0, sendField.length - 2);
-  console.log(sendField);
+  //console.log(sendField);
   var mailOptions = {
     from: 'Whiteboard Invite',
     to: 'whiteboardinvite@gmail.com',
@@ -366,7 +367,47 @@ app.use(errorHandler);
 //SOCKET STUFF
 io.on('connection', function(socket) {
   console.log(socket.id);
+  console.log("a user signed in");
+  //add user to group room
+  socket.on('add user', function(data){
+    clients[data.email] = {
+      "socket": socket.id,
+      "firstName": data.firstName,
+      "group": data.group,
+      "lastName": data.lastName,
+      "_id": data._id
+    };
+    socket.join(data.group);
+    var roomMembers = io.of('/').in(data.group).clients();
+    console.log(roomMembers.server.adapter.Adapter.rooms);
+    //FIX THIS SHIT!!!
+    //socket.emit('room member test', roomMembers);
+  });
+  //Send chat message
+  socket.on('message', function(data){
+    console.log("Sending: " + data.message + " to " + data.to);
+    if (clients[data.to]){
+      io.sockets.connected[clients[data.to].socket].emit("message", data);
+    } else {
+      console.log("User does not exist: " + data.to); 
+    }
+  });
+
   socket.on('disconnect', function(){
-    console.log('user disconnected')
+    console.log('user disconnected');
+    for(var email in clients) {
+  		if(clients[email].socket === socket.id) {
+        delete clients[email];
+        socket.leave(clients[email].group);
+  			break;
+  		}
+    }
+    /*
+    if(clients){
+      if(clients[email])
+      if(clients[email].group){
+        socket.leave(clients[email].group);
+      }
+    } */
   });
 });
