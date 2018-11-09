@@ -3,6 +3,7 @@
 myApp.controller('MainCtrl', ['$scope', '$http', '$cookies', function($scope, $http, $cookies){
   //DECLARATIONS
   var socket = io();
+  //$scope.userList = [{firstName: "CHRIS"}];
   //HELPER FUNCTIONS
   function getUserIfCookie() {
     if ($cookies.get('email')) {
@@ -20,6 +21,7 @@ myApp.controller('MainCtrl', ['$scope', '$http', '$cookies', function($scope, $h
         $scope.currentEmail = result.data.email;
         $scope.currentGroup = result.data.group;
         var userData = {
+          "email": result.data.email,
           "firstName": result.data.firstName,
           "group": result.data.group,
           "lastName": result.data.lastName,
@@ -34,5 +36,16 @@ myApp.controller('MainCtrl', ['$scope', '$http', '$cookies', function($scope, $h
   //Scope functions
   socket.on('room member test',function(data) {
     console.log(data);
+    console.log(data.socketList);
+    console.log(data.clientList);
+    $scope.userList = data.clientList;
+    for(var i = 0; i < 2; i++) {
+      var newUser = {
+        firstName: 'user'
+      };
+      //$scope.userList.push(newUser);
+    }
+      console.log(newUser);
+      console.log($scope.userList);
   });
 }]);

@@ -20,6 +20,12 @@ var MongoUrl = config.MONGODB_CONNECT_URL;
 var jwtSecret = config.JWT_SECRET;
 var clients = {};
 //Helper Functions
+function objectToArray(obj) {
+	var result = Object.keys(obj).map(function(key) {
+  	return[obj[key]];
+  });
+  return result;
+}
 function parseCookies (cookie) {
   var list = {},
       rc = cookie;
@@ -370,18 +376,26 @@ io.on('connection', function(socket) {
   console.log("a user signed in");
   //add user to group room
   socket.on('add user', function(data){
-    clients[data.email] = {
+    if (clients[data.group] == undefined) {
+      clients[data.group] = {};
+    }
+    clients[data.group][data.email] = {
       "socket": socket.id,
       "firstName": data.firstName,
       "group": data.group,
       "lastName": data.lastName,
       "_id": data._id
     };
+    console.log(data);
     socket.join(data.group);
     var roomMembers = io.of('/').in(data.group).clients();
-    console.log(roomMembers.server.adapter.Adapter.rooms);
-    //FIX THIS SHIT!!!
-    //socket.emit('room member test', roomMembers);
+    console.log(roomMembers.adapter.rooms[data.group].sockets);
+    console.log(clients);
+    var roomData = {
+      socketList: roomMembers.adapter.rooms[data.group].sockets,
+      clientList: objectToArray(clients[data.group])
+    };
+    socket.emit('room member test', roomData);
   });
   //Send chat message
   socket.on('message', function(data){
