@@ -21,10 +21,15 @@ var jwtSecret = config.JWT_SECRET;
 var clients = {};
 //Helper Functions
 function objectToArray(obj) {
+  //Only works with retarded socket.io object
 	var result = Object.keys(obj).map(function(key) {
   	return[obj[key]];
   });
-  return result;
+  var result2 = [];
+  for (var i = 0; i < result.length; i++) {
+    result2.push(result[i][0]);
+  }
+  return result2;
 }
 function parseCookies (cookie) {
   var list = {},
@@ -35,7 +40,6 @@ function parseCookies (cookie) {
   });
   return list;
 }
-
 function parseCookie(fullCookie) {
   var cookieParts = parseCookies(fullCookie);
   var token = cookieParts.token;
@@ -395,7 +399,8 @@ io.on('connection', function(socket) {
       socketList: roomMembers.adapter.rooms[data.group].sockets,
       clientList: objectToArray(clients[data.group])
     };
-    socket.emit('room member test', roomData);
+    //socket.emit('room member test', roomData);
+    io.in(data.group).emit('user update', roomData);
   });
   //Send chat message
   socket.on('message', function(data){

@@ -22,17 +22,17 @@
         </div>
         <div class="middle">
           <p>This if the fucking middle</p>
-          <div class="chat">
-            <p>Chat Message</p>
-            <input type="text" ng-model="chatMessage">
-            <button ng-click="sendMessage()">Send</button>
-          </div>
+          <form ng-submit="sendMessage()">
+            <div id="chat">
+              <p class="chatTo">{{chatTo}}</p>
+              <input type="text" ng-model="chatMessage" class="chatText">
+            </div>
+          </form>
         </div>
         <div class="right">
           <ul>
-            <li ng-repeat="user in userList">{{user.firstName}}</li>
+            <li ng-repeat="user in userList" ng-click="startChat(user)">{{user.firstName}} {{user.lastName}}</li>
           </ul>
-          <p ng-repeat="user in userList">{{user.firstName}}</p>
         </div>
       </div>
     </div>

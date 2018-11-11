@@ -34,7 +34,16 @@ myApp.controller('MainCtrl', ['$scope', '$http', '$cookies', function($scope, $h
   //RUN THIS TO GET DATA
   getUserIfCookie();
   //Scope functions
-  socket.on('room member test',function(data) {
+  $scope.startChat = function(user) {
+    $("#chat").show();
+    $scope.chatTo = user.firstName + " " + user.lastName;
+    $scope.chatSocket = user.socket;
+  };
+  $scope.sendMessage = function() {
+    
+  };
+  //Socket.io functions
+  socket.on('user update',function(data) {
     console.log(data);
     console.log(data.socketList);
     console.log(data.clientList);
@@ -47,5 +56,7 @@ myApp.controller('MainCtrl', ['$scope', '$http', '$cookies', function($scope, $h
     }
       console.log(newUser);
       console.log($scope.userList);
+      //alert($scope.userList[0].firstName);
+      $scope.$apply();
   });
 }]);
