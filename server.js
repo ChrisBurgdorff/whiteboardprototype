@@ -86,6 +86,7 @@ function verifyToken(req, res, next) {
 //Error Handling:
 function errorHandler (err, req, res, next) {
   console.log(err.message);
+  console.log(res.headers);
   res.status(200).json({message: err.message});
   //res.json({message: err.message});
 }
